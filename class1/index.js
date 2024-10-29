@@ -106,4 +106,8 @@ const normalizedPath = path.normalize("/path/to/../file.txt");
 console.log(normalizedPath);
 
 const complexPath = "/path/./to/../to/../../file.txt";
+// path -> to -> .. -> to -> .. -> file.txt
 console.log(path.normalize(complexPath));
+/**
+ * /file.txt
+ */
