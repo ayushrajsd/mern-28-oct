@@ -22,6 +22,19 @@ app.post("/data", (req, res) => {
 
 // RESTful API - use proper verbs for the routes / request
 
+const users = [
+  { id: 1, name: "user 1" },
+  { id: 2, name: "user 2" },
+];
+
+app.post("/users", (req, res) => {
+  const newUser = req.body;
+  const userId = users.length + 1;
+  newUser.id = userId;
+  users.push(newUser);
+  res.status(201).json({ message: "User created", user: newUser });
+});
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
