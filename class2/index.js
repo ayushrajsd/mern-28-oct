@@ -27,12 +27,38 @@ const users = [
   { id: 2, name: "user 2" },
 ];
 
+/**
+ *
+ * arr - ["a", "b", "c"]
+ * arr.findIndex((item) => item === "z") // -1
+ */
 app.post("/users", (req, res) => {
   const newUser = req.body;
   const userId = users.length + 1;
   newUser.id = userId;
   users.push(newUser);
   res.status(201).json({ message: "User created", user: newUser });
+});
+
+/**
+ * /users/1
+ * /users/2
+ */
+app.delete("/users/:id", (req, res) => {
+  const userId = req.params.id;
+  console.log(userId);
+  // find the user index by the id
+  // delete the user from the users array
+  const userIndex = users.findIndex((user) => user.id == userId);
+  if (userIndex === -1) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  users.splice(userIndex, 1);
+  res.json({ message: "User deleted" });
+});
+
+app.get("/users", (req, res) => {
+  res.json(users);
 });
 
 const port = 3000;
