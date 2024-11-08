@@ -58,6 +58,10 @@ const app = express();
 connectDB();
 
 app.use(express.json());
+const print = (req, res, next) => {
+  console.log("Request received at ", req.url, req.method);
+  next();
+};
 app.use("/api/products", productRouter);
 
 app.listen(3000, () => {

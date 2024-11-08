@@ -6,6 +6,7 @@ const getAllProducts = async (req, res) => {
 };
 
 const getProductById = async (req, res) => {
+  console.log("request", req.url);
   const productId = req.params.id;
   try {
     const product = await ProductModel.findById(productId);
@@ -53,6 +54,10 @@ const deleteProductById = async (req, res) => {
   return res.status(200).json({ message: "Product deleted" });
 };
 
-module.export = {
+module.exports = {
   getAllProducts,
+  getProductById,
+  createProduct,
+  updateProductById,
+  deleteProductById,
 };
