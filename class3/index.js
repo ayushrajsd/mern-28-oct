@@ -51,18 +51,21 @@
 const express = require("express");
 const connectDB = require("./config/db");
 const productRouter = require("./routes/productRoutes");
+const userRouter = require("./routes/userRoutes");
 
 console.log(productRouter);
 
 const app = express();
 connectDB();
 
-app.use(express.json());
+app.use(express.json()); // parse the incoming request body as JSON and made available in req.body
+
 const print = (req, res, next) => {
   console.log("Request received at ", req.url, req.method);
   next();
 };
 app.use("/api/products", productRouter);
+app.use("/api/users", userRouter); // for every request that matches /api/users, use the userRouter
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

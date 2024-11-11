@@ -42,6 +42,11 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+productSchema.pre("save", function () {
+  console.log("Before saving the product");
+  this.confirmPassword = undefined; // confirm password will not be saved in the database
+});
+
 const ProductModel = mongoose.model("products", productSchema);
 
 module.exports = ProductModel;
