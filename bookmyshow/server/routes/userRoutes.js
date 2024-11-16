@@ -1,5 +1,7 @@
 const express = require("express");
 const UserModel = require("../models/userModel");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 
 const usersRouter = express.Router();
 
@@ -41,9 +43,19 @@ usersRouter.post("/login", async (req, res) => {
         message: "Invalid password",
       });
     }
-    res.sendFile({
+    console.log("req received", req.body, user);
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+    // res.cookie("token", token, {
+    //   httpOnly: true,
+    //   maxAge: 24 * 60 * 60 * 1000,});
+
+    console.log(token);
+    res.send({
       success: true,
       message: "User logged in successfully",
+      data: token,
     });
   } catch (err) {
     res.status(400).json({ message: err.message });
