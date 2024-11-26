@@ -20,7 +20,7 @@ usersRouter.post("/register", async (req, res) => {
     const newUser = new UserModel(req.body);
     await newUser.save();
     res.send({
-      succes: true,
+      success: true,
       message: "User created successfully",
     });
   } catch (err) {

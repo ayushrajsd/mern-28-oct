@@ -2,6 +2,7 @@ const Movie = require("../models/movieModel");
 
 const addMovie = async (req, res) => {
   try {
+    console.log("movie request", req.body);
     const newMovie = new Movie(req.body);
     await newMovie.save();
     res.send({
@@ -22,7 +23,7 @@ const getAllMovies = async (req, res) => {
     const allMovies = await Movie.find();
     res.send({
       success: true,
-      message: allMovies,
+      data: allMovies,
     });
   } catch (err) {
     console.log(err);

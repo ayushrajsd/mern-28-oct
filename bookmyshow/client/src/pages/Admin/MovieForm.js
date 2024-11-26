@@ -23,7 +23,7 @@ const MovieForm = ({
 
   const onFinish = async (values) => {
     try {
-      dispatch(ShowLoading());
+      dispatch(ShowLoading()); // loading = true
       let response = null;
       if (formType === "add") {
         response = await addMovie(values);
@@ -64,7 +64,7 @@ const MovieForm = ({
           <Col span={24}>
             <Form.Item
               label="Movie Name"
-              name="title"
+              name="name"
               rules={[{ required: true, message: "Movie name is required!" }]}
             >
               <Input placeholder="Enter the movie name" />

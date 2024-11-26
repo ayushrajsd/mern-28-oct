@@ -9,30 +9,30 @@ import { useDispatch } from "react-redux";
 import { HideLoading, ShowLoading } from "../../redux/loaderSlice";
 
 function MovieList() {
-  const fakeMovies = [
-    {
-      key: "1",
-      poster: "Sabarmati Report",
-      name: "Sabarmati Report",
-      description: "Real story of Sabarmati incident",
-      duration: "2hr 30min",
-      genre: "Thriller",
-      language: "Hindi",
-      releaseDate: "12-11-2024",
-    },
-    {
-      key: "2",
-      poster: "Amaran",
-      name: "Amaran Rort",
-      description: "Real story of Major Mukund Varadarajan",
-      duration: "2hr 30min",
-      genre: "nationalist",
-      language: "Hindi",
-      releaseDate: "12-11-2024",
-    },
-  ];
+  // const fakeMovies = [
+  //   {
+  //     key: "1",
+  //     poster: "Sabarmati Report",
+  //     name: "Sabarmati Report",
+  //     description: "Real story of Sabarmati incident",
+  //     duration: "2hr 30min",
+  //     genre: "Thriller",
+  //     language: "Hindi",
+  //     releaseDate: "12-11-2024",
+  //   },
+  //   {
+  //     key: "2",
+  //     poster: "Amaran",
+  //     name: "Amaran Rort",
+  //     description: "Real story of Major Mukund Varadarajan",
+  //     duration: "2hr 30min",
+  //     genre: "nationalist",
+  //     language: "Hindi",
+  //     releaseDate: "12-11-2024",
+  //   },
+  // ];
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [movies, setMovies] = useState(fakeMovies);
+  const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [formType, setFormType] = useState("add");
@@ -51,7 +51,7 @@ function MovieList() {
   };
 
   useEffect(() => {
-    // getData();
+    getData();
   }, []);
 
   const tableHeadings = [
@@ -59,7 +59,15 @@ function MovieList() {
       title: "Poster",
       dataIndex: "poster",
       render: (text, data) => {
-        return <img src={data.poster} height={"115"} width={"75"} />;
+        // console.log("data", data);
+        return (
+          <img
+            src={data.poster}
+            height={"115"}
+            width={"75"}
+            style={{ objectFit: "cover" }}
+          />
+        );
       },
     },
     {
