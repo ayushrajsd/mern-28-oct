@@ -36,6 +36,7 @@ function ProtectedRoute({ children }) {
     if (localStorage.getItem("token")) {
       getValidUser();
     } else {
+      // message.error("Please login to continue");
       navigate("/login");
     }
   }, []);

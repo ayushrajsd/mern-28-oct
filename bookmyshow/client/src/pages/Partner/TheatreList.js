@@ -6,9 +6,11 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { getAllTheatres } from "../../api/theatres";
 import { useSelector, useDispatch } from "react-redux";
 import { ShowLoading, HideLoading } from "../../redux/loaderSlice";
+import ShowModal from "./ShowModal";
 
 const TheatreList = () => {
   const { user } = useSelector((state) => state.users);
+  const { loading } = useSelector((state) => state.loaders);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isShowModalOpen, setIsShowModalOpen] = useState(false);
@@ -32,10 +34,11 @@ const TheatreList = () => {
       } else {
         message.error(response.message);
       }
-      dispatch(HideLoading());
     } catch (err) {
-      dispatch(HideLoading());
+      // dispatch(HideLoading());
       message.error(err.message);
+    } finally {
+      dispatch(HideLoading());
     }
   };
   useEffect(() => {
@@ -112,6 +115,9 @@ const TheatreList = () => {
       },
     },
   ];
+  // if(loading){
+  //   return <div>Loading ...</div>
+  // }else
 
   return (
     <>
@@ -127,6 +133,7 @@ const TheatreList = () => {
         </Button>
       </div>
       <Table dataSource={theatres} columns={columns} />
+
       {isModalOpen && (
         <TheatreFormModal
           isModalOpen={isModalOpen}
@@ -144,6 +151,13 @@ const TheatreList = () => {
           setIsDeleteModalOpen={setIsDeleteModalOpen}
           setSelectedTheatre={setSelectedTheatre}
           getData={getData}
+        />
+      )}
+      {isShowModalOpen && (
+        <ShowModal
+          isShowModalOpen={isShowModalOpen}
+          setIsShowModalOpen={setIsShowModalOpen}
+          selectedTheatre={selectedTheatre}
         />
       )}
     </>
