@@ -70,7 +70,7 @@ router.get("/get-all-shows-by-theatre/:theatreId", async (req, res) => {
 
 // get all theatres by movie which has shows
 
-router.get("/get-all-theatres-by-movie/:/movie/:date", async (req, res) => {
+router.get("/get-all-theatres-by-movie/:movie/:date", async (req, res) => {
   try {
     /**
      * retrieve all shows by movie and date - Show.find({movie, date})

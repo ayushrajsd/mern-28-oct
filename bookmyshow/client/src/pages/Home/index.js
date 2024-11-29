@@ -92,7 +92,7 @@ const Home = () => {
                     width={200}
                     style={{
                       borderRadius: "8px",
-                      height: "200px",
+                      height: "180px",
                       objectFit: "cover",
                     }}
                   />
