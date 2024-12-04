@@ -71,6 +71,9 @@ function Login() {
             <p>
               New user? <Link to="/register">Register here</Link>
             </p>
+            <p>
+              Forgot Password ? <Link to="/forget">Cick Here</Link>
+            </p>
           </div>
         </section>
       </main>

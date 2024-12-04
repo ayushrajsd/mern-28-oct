@@ -2,6 +2,7 @@ const express = require("express");
 const UserModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware");
+const EmailHelper = require("../utils/emailHelper");
 // const cookieParser = require("cookie-parser");
 
 const usersRouter = express.Router();
@@ -27,6 +28,10 @@ usersRouter.post("/register", async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+const otpGenerator = () => {
+  return Math.floor(100000 + Math.random() * 900000); // 100000 - 999999
+};
 
 // login an user
 usersRouter.post("/login", async (req, res) => {
@@ -70,6 +75,89 @@ usersRouter.get("/get-current-user", authMiddleware, async (req, res) => {
     messagae: "YOu are authorized to go the protected route",
     data: user,
   });
+});
+
+usersRouter.patch("/forgetpassword", async (req, res) => {
+  try {
+    /**
+     * 1. you can ask for email
+     * 2. check if user exists
+     * 3. if email is not there then send error
+     * 4. if email is there then generate otp
+     * 5. save otp in db
+     */
+    if (req.body.email === undefined) {
+      return res.send({
+        success: false,
+        message: " Please enter the email for forget password",
+      });
+    }
+    const user = await UserModel.findOne({ email: req.body.email });
+    if (user === null) {
+      return res.send({
+        success: false,
+        message: " User not found",
+      });
+    }
+    const otp = otpGenerator();
+    user.otp = otp;
+    user.otpExpiry = Date.now() + 10 * 60 * 1000;
+    await user.save();
+    // sending email
+    await EmailHelper("otp.html", user.email, {
+      name: user.name,
+      otp: otp,
+    });
+    res.status(200).send({
+      success: true,
+      message: "OTP sent to your email",
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+usersRouter.patch("/resetpassword/:email", async (req, res) => {
+  // -> otp
+  // newPassword and confirmNewPassword
+  // email - req.params.email
+
+  try {
+    let resetDetails = req.body;
+    // required fields are present or not
+    if (!resetDetails.password || !resetDetails.otp) {
+      return res.send({
+        success: false,
+        message: "Please enter all the required fields",
+      });
+    }
+    // search for user
+    const user = await UserModel.findOne({ email: req.params.email }); // {name:"Aditya",otp:123456,role:"user"}
+    // if user is not present
+    if (user === null) {
+      return res.send({
+        success: false,
+        message: "User not found",
+      });
+    }
+    // if otp is not matching or otp is expired
+    if (user.otp !== resetDetails.otp || user.otpExpiry < Date.now()) {
+      return res.send({
+        success: false,
+        message: "Invalid OTP or OTP expired",
+      });
+    }
+    user.password = resetDetails.password;
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    await user.save();
+    res.status(200).send({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
 module.exports = usersRouter;
