@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware");
 const EmailHelper = require("../utils/emailHelper");
 // const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 
 const usersRouter = express.Router();
 
@@ -18,7 +19,12 @@ usersRouter.post("/register", async (req, res) => {
         message: "User already exists",
       });
     }
-    const newUser = new UserModel(req.body);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const newUser = new UserModel({
+      ...req.body,
+      password: hashedPassword,
+    });
+    // const newUser = new UserModel(req.body);
     await newUser.save();
     res.send({
       success: true,
@@ -33,6 +39,17 @@ const otpGenerator = () => {
   return Math.floor(100000 + Math.random() * 900000); // 100000 - 999999
 };
 
+async function hashedPassword(password) {
+  console.time("time taken");
+  const salt = await bcrypt.genSalt(14);
+  console.log("salt", salt);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  console.log("hashedPassword", hashedPassword);
+  console.timeEnd("time taken");
+  console.log("*****************");
+  return hashedPassword;
+}
+
 // login an user
 usersRouter.post("/login", async (req, res) => {
   try {
@@ -43,7 +60,16 @@ usersRouter.post("/login", async (req, res) => {
         message: "User not found",
       });
     }
-    if (req.body.password !== user.password) {
+    // if (req.body.password !== user.password) {
+    //   return res.send({
+    //     success: false,
+    //     message: "Invalid password",
+    //   });
+    // }
+    const password = "Ayush@123";
+    hashedPassword(password);
+    const isMatch = await bcrypt.compare(req.body.password, user.password);
+    if (!isMatch) {
       return res.send({
         success: false,
         message: "Invalid password",

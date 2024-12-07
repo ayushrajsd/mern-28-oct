@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { message, Card, Row, Col, Button } from "antd";
 import moment from "moment";
 import StripeCheckout from "react-stripe-checkout";
+import { bookShow, makePayment } from "../../api/booking";
 
 const BookShow = () => {
   // Redux state and hooks
@@ -38,7 +39,8 @@ const BookShow = () => {
   // Function to generate seat layout dynamically
   const getSeats = () => {
     let columns = 12; // Number of columns for seating arrangement
-    let totalSeats = 120; // Total number of seats
+    // let totalSeats = 120; // Total number of seats
+    const totalSeats = show.totalSeats;
     let rows = Math.floor(totalSeats / columns); // Calculating number of rows
 
     return (
@@ -114,9 +116,50 @@ const BookShow = () => {
     getData();
   }, []);
 
-  const onToken = (token) => {
+  const book = async (transactionId) => {
+    try {
+      dispatch(ShowLoading());
+      const response = await bookShow({
+        show: params.id,
+        transactionId,
+        seats: selectedSeats,
+        user: user._id,
+      });
+      if (response.success) {
+        message.success(response.message);
+        navigate("/profile");
+      } else {
+        message.error(response.message);
+      }
+      dispatch(HideLoading());
+    } catch (err) {
+      message.error(err.message);
+      dispatch(HideLoading());
+    }
+  };
+
+  const onToken = async (token) => {
     console.log("token from stripe", token);
     // make payment api - stripe
+    try {
+      dispatch(ShowLoading());
+      const response = await makePayment(
+        token,
+        selectedSeats.length * show.ticketPrice * 100
+      );
+      if (response.success) {
+        message.success(response.message);
+        book(response.data);
+        console.log(response);
+      } else {
+        message.error(response.message);
+      }
+      dispatch(HideLoading());
+    } catch (err) {
+      message.error(err.message);
+      message.error("Payment failed");
+      dispatch(HideLoading());
+    }
   };
 
   // JSX rendering
